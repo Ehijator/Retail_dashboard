@@ -1,0 +1,81 @@
+/**-----------STORED PROCEDURE FOR DELIVERY AND REFRESHING OF NET REVENUE KPI-----------**/
+
+-- Report type 0 = GIVES AGGREGATE BY REGION
+-- Report type 1 = GIVES AGGREGATE BY CITY
+
+CREATE or ALTER PROCEDURE NetRevenueYear 
+(
+    @P_reporttype as INT
+)
+
+
+
+as 
+
+BEGIN
+
+DECLARE @SQL_0 AS NVARCHAR(MAX)
+DECLARE @SQL_1 as NVARCHAR(MAX)
+
+/*AGGREGATE BY REGION*/
+
+set @SQL_0 = N'
+                select 
+                datepart(year , Order_Date) as YEAR
+                ,Region
+                --,city
+                --,STATE
+
+
+                ,sum(cast(Sales as int)) as NetRevenue_or_NetSales
+
+
+                from dbo.US_Store as OL
+
+                where datepart(year,getdate()) - datepart(year , Order_Date) <= 10
+
+                group BY 
+                datepart(year , Order_Date)
+                ,Region
+
+
+                order by [YEAR] DESC
+                ,region
+                --,city
+                --,STATE
+            '
+
+set @SQL_1 = N'
+select 
+                datepart(year , Order_Date) as YEAR
+                ,Region
+                ,city
+                --,STATE
+
+
+                ,sum(cast(Sales as int)) as NetRevenue_or_NetSales
+
+
+                from dbo.US_Store as OL
+
+                where datepart(year,getdate()) - datepart(year , Order_Date) <= 10
+
+                group BY 
+                datepart(year , Order_Date)
+                ,Region
+                ,City
+
+
+                order by [YEAR] DESC
+                ,region
+                ,city
+                --,STATE
+'
+    
+if  @P_reporttype = 0
+EXEC sp_executesql @SQL_0
+if @P_reporttype = 1
+EXEC sp_executesql @SQL_1
+END
+
+--EXECUTE NetRevenueYear 1
