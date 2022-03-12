@@ -1,9 +1,13 @@
-/**-----------STORED PROCEDURE FOR DELIVERY AND REFRESHING OF NET REVENUE KPI-----------**/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/**-----------STORED PROCEDURE FOR DELIVERY OF CUSTOMER RETENTION & NET REVENUE KPI-----------**/
 
--- Report type 0 = GIVES AGGREGATE BY REGION
--- Report type 1 = GIVES AGGREGATE BY CITY
+-- Report type 0 = Gives data to be used for cohort analysis in powerBI
+-- Report type 1 = This handles the data that'll be used for the net revenue and Profit KPIs
 
-CREATE or ALTER PROCEDURE NetRevenueYear 
+ALTER PROCEDURE [dbo].[KPI_SP] 
 (
     @P_reporttype as INT
 )
@@ -17,59 +21,60 @@ BEGIN
 DECLARE @SQL_0 AS NVARCHAR(MAX)
 DECLARE @SQL_1 as NVARCHAR(MAX)
 
-/*AGGREGATE BY REGION*/
+
 
 set @SQL_0 = N'
-                select 
-                datepart(year , Order_Date) as YEAR
-                ,Region
-                --,city
-                --,STATE
-
-
-                ,sum(cast(Sales as int)) as NetRevenue_or_NetSales
-
-
-                from dbo.US_Store as OL
-
-                where datepart(year,getdate()) - datepart(year , Order_Date) <= 10
-
-                group BY 
-                datepart(year , Order_Date)
-                ,Region
-
-
-                order by [YEAR] DESC
-                ,region
-                --,city
-                --,STATE
+                select * from US_store 
+                
             '
 
 set @SQL_1 = N'
-select 
+             SELECT          
                 datepart(year , Order_Date) as YEAR
-                ,Region
-                ,city
-                --,STATE
-
-
+                                ,segment 
+                                ,Region
+                                ,STATE
+                                ,city
+                                
+                                ,category
+                                ,sub_category
+                
                 ,sum(cast(Sales as int)) as NetRevenue_or_NetSales
+
+                ,sum(cast(Profit as int)) as Total_Profit
+
+                ,case when (sum(cast(Discount as int))) > 0 
+                    
+                    THEN (sum(cast(Sales as int)))/*/(sum(cast(Quantity as int)))*/* (sum(cast(Discount as int))) - (sum(cast(Profit as int))) 
+                 
+                 ELSE ((sum(cast(Sales as int)))/*/(sum(cast(Quantity as int)))*/ -  (sum(cast(Profit as int))) ) END as Cost_price
+                
 
 
                 from dbo.US_Store as OL
 
-                where datepart(year,getdate()) - datepart(year , Order_Date) <= 10
+                
 
                 group BY 
                 datepart(year , Order_Date)
+                ,segment 
                 ,Region
-                ,City
+                ,STATE
+                ,city
+                
+                ,category
+                ,sub_category
 
 
                 order by [YEAR] DESC
+                ,segment 
                 ,region
+                ,STATE
                 ,city
-                --,STATE
+                
+                ,category
+                ,sub_category
+
 '
     
 if  @P_reporttype = 0
@@ -78,4 +83,5 @@ if @P_reporttype = 1
 EXEC sp_executesql @SQL_1
 END
 
---EXECUTE NetRevenueYear 1
+-- EXECUTE KPI_SP 1
+-- GO
