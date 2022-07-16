@@ -1,4 +1,4 @@
-# Retail_dashboard
+# Retail dashboard
 
 This dashboard shows revenue data based on a dataset accquired on [Kaggle](www.kaggle.com).
 
