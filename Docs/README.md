@@ -1,6 +1,6 @@
 # Retail dashboard
 
-This dashboard shows revenue data based on a dataset accquired on [Kaggle](www.kaggle.com).
+This dashboard shows revenue data based on a dataset accquired on [Kaggle](https://www.kaggle.com/datasets).
 
 # Tools Used
 - Power BI - for visualizing
