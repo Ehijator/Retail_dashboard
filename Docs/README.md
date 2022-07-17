@@ -7,7 +7,7 @@ This dashboard shows revenue data based on a dataset accquired on [Kaggle](https
 # Tools Used
 - Power BI - for visualizing
 - Power Query - for cleaning and wrangling
-- Excel - holding the source data
+- SSMS & SQL - for storing and querying source data
 
 # Demo
 
