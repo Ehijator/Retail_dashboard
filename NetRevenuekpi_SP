@@ -12,8 +12,6 @@ ALTER PROCEDURE [dbo].[KPI_SP]
     @P_reporttype as INT
 )
 
-
-
 as 
 
 BEGIN
@@ -21,61 +19,42 @@ BEGIN
 DECLARE @SQL_0 AS NVARCHAR(MAX)
 DECLARE @SQL_1 as NVARCHAR(MAX)
 
-
-
 set @SQL_0 = N'
-                select * from US_store 
-                
-            '
-
-set @SQL_1 = N'
-             SELECT          
+                SELECT * from US_store    
+              '
+set @SQL_1 = N' SELECT          
                 datepart(year , Order_Date) as YEAR
-                                ,segment 
-                                ,Region
-                                ,STATE
-                                ,city
-                                
-                                ,category
-                                ,sub_category
-                
+                ,segment 
+                ,Region
+                ,STATE
+                ,city
+                ,category
+                ,sub_category
                 ,sum(cast(Sales as int)) as NetRevenue_or_NetSales
-
                 ,sum(cast(Profit as int)) as Total_Profit
-
                 ,case when (sum(cast(Discount as int))) > 0 
-                    
                     THEN (sum(cast(Sales as int)))/*/(sum(cast(Quantity as int)))*/* (sum(cast(Discount as int))) - (sum(cast(Profit as int))) 
-                 
                  ELSE ((sum(cast(Sales as int)))/*/(sum(cast(Quantity as int)))*/ -  (sum(cast(Profit as int))) ) END as Cost_price
                 
-
-
                 from dbo.US_Store as OL
 
-                
-
-                group BY 
+                group by 
                 datepart(year , Order_Date)
                 ,segment 
                 ,Region
                 ,STATE
                 ,city
-                
                 ,category
                 ,sub_category
-
-
+                
                 order by [YEAR] DESC
                 ,segment 
                 ,region
                 ,STATE
                 ,city
-                
                 ,category
                 ,sub_category
-
-'
+            '
     
 if  @P_reporttype = 0
 EXEC sp_executesql @SQL_0
@@ -83,5 +62,3 @@ if @P_reporttype = 1
 EXEC sp_executesql @SQL_1
 END
 
--- EXECUTE KPI_SP 1
--- GO
